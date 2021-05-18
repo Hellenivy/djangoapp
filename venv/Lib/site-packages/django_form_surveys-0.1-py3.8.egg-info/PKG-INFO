@@ -1,0 +1,43 @@
+Metadata-Version: 1.1
+Name: django-form-surveys
+Version: 0.1
+Summary: A simple Django app to conduct Web-based survey.
+Home-page: https://github.com/irfanpule/django-form-surveys
+Author: irfanpule
+Author-email: irfan.pule2@gmail.com
+License: MIT License
+Description: =====
+        Form Survey
+        =====
+        
+        Surveys is a simple Django app to conduct Web-based to create survey. You can
+        create custom survey from django admin.
+        
+        
+        Quick start
+        -----------
+        
+        1. Add "surveys" to your INSTALLED_APPS setting like this::
+        
+            INSTALLED_APPS = [
+                ...
+                'surveys',
+            ]
+        
+        2. Run `python manage.py migrate` to create the surveys models.
+        
+        3. Start the development server and visit http://127.0.0.1:8000/admin/
+           to create a survey.
+        
+Platform: UNKNOWN
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Django
+Classifier: Framework :: Django :: 2.0
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
