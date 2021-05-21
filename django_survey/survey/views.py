@@ -1,13 +1,13 @@
 import json
-from django.contrib.auth import authenticate, signin
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth.signals import user_logged_in, user_logged_out, user_login_failed
+from django.conf import UserSettingsHolder
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import UserChangeForm, UserCreationForm, AuthenticationForm
 from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect, reverse
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views import View
 from .models import Choice, Question, Survey, SurveyAssignment
-# from .forms import SurveyCreateForm
+
 
 class RegisterView(View):
     def get(self, request):
@@ -17,14 +17,14 @@ class RegisterView(View):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            return redirect(reverse('signin'))
+            return redirect(reverse('login'))
 
-        return render(request, 'survey/register.html', { 'form': form })
+        # return render(request, 'survey/register.html', { 'form': form })
 
 
 class LoginView(View):
     def get(self, request):
-        return render(request, 'survey/signin.html', { 'form':  AuthenticationForm })
+        return render(request, 'survey/login.html', { 'form':  AuthenticationForm })
 
 
         def post(self, request):
@@ -35,7 +35,7 @@ class LoginView(View):
             except ValidationError:
                 return render(
                     request,
-                    'survey/signin.html',
+                    'survey/login.html',
                     { 'form': form, 'invalid_creds': True }
                 )
 
@@ -43,7 +43,7 @@ class LoginView(View):
 
             return redirect(reverse('profile'))
 
-        return render(request, 'survey/sigin.html', { 'form': form })
+        return render(request, 'survey/login.html', { 'form': form })
 
 class ProfileView(LoginRequiredMixin, View):
     def get(self, request):
@@ -59,7 +59,7 @@ class ProfileView(LoginRequiredMixin, View):
 
 class SurveyCreateView(LoginRequiredMixin, View):
     def get(self, request):
-        users = user_logged_in.objects.all()
+        users = UserPassesTestMixin.objects.all()
         return render(request, 'survey/create_survey.html', {'users': users})
     
     def post(self, request):
@@ -83,7 +83,7 @@ class SurveyCreateView(LoginRequiredMixin, View):
             context['assignees_error'] = 'assignees are required'
         
         if not valid:
-            context['users'] = user_logged_out.objects.all()
+            context['users'] = UserSettingsHolder.objects.all()
             return render(request, 'survey/create_survey.html', context)
             
         survey = Survey.objects.create(title=title, created_by=request.user)
@@ -94,7 +94,7 @@ class SurveyCreateView(LoginRequiredMixin, View):
                 Choice.objects.create(text=choice_data['text'], question=question)
               
         for assignee in assignees:
-            assigned_to = user_login_failed.objects.get(pk=int(assignee))
+            assigned_to = UserChangeForm.objects.get(pk=int(assignee))
             SurveyAssignment.objects.create(
                 survey=survey,
                 assigned_by=request.user,
